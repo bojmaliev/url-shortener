@@ -1,5 +1,5 @@
 <?php
-
+Route::get('/register', fn()=> '');
 Auth::routes();
 
 Route::get('/', 'LinksController@create')->middleware('auth');
