@@ -1,6 +1,5 @@
 <?php
-Route::get('/register', fn()=> '');
-Auth::routes();
+Auth::routes(['register' => false]);
 
 Route::get('/', 'LinksController@create')->middleware('auth');
 Route::post('/links', 'LinksController@store')->middleware('auth');;
