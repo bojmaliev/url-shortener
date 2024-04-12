@@ -2,7 +2,7 @@
 
 Auth::routes();
 
-Route::get('/', 'LinksController@create');
+Route::get('/', 'LinksController@create')->middleware('auth');
 Route::post('/links', 'LinksController@store');
 Route::get('/links/{link}', 'LinksController@show');
 Route::get('/dashboard', 'DashboardController@index')->middleware('auth');
