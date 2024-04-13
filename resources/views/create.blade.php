@@ -7,7 +7,7 @@
 
                 @if(session()->has('url'))
                     <div class="alert alert-success">
-                        
+                        {!!session()->get('url')!!}
                     </div>
                 @endif
 
