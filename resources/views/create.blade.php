@@ -5,9 +5,10 @@
         <div class="row justify-content-center">
             <div class="col-md-10">
 
-                @if(session()->has('url'))
+                @if(session()->has('url') && !is_array(session()->get('url')))
                     <div class="alert alert-success">
-                        {{dd(session()->get('url'))}}
+
+                        Here you go- <a id="hash-link" target="_blank" href="{{ session()->get('url') }}">{{ session()->get('url') }}</a>
                     </div>
                 @endif
 
