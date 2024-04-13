@@ -5,11 +5,11 @@
         <div class="row justify-content-center">
             <div class="col-md-10">
 
-                @if(session()->has('url'))
+                <!-- @if(session()->has('url'))
                     <div class="alert alert-success">
                         Here you go- <a id="hash-link" target="_blank" href="{{ session()->get('url') }}">{{ session()->get('url') }}</a>
                     </div>
-                @endif
+                @endif -->
 
                 @if(session()->has('error'))
                     <div class="alert alert-danger">
