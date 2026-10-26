@@ -8,7 +8,7 @@ use Illuminate\Support\Str;
 
 class UrlShortenerService implements UrlShortenerContract
 {
-    public function make(string $url, string $hash = null): Link
+    public function make(string $url, ?string $hash = null): Link
     {
         $link = Link::where('url', $url)
             ->when($hash, function ($query) use ($hash) {

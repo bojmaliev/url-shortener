@@ -2,23 +2,21 @@
 
 # URL Shortener
 
-A simple URL Shortener application with Laravel.
+A simple URL Shortener application with Laravel and [Filament](https://filamentphp.com).
 
 ## Installation
 
-It's a Laravel `8.17.2` application with a very little functionality. You can install it as any other laravel 8 application. Here are the commands you need to run one by one-
+It's a Laravel `13` application with a [Filament 5](https://filamentphp.com/docs) panel as its UI, so there is no frontend build step. It needs PHP `8.3` or newer with the `bcmath` and `intl` extensions. Here are the commands you need to run one by one-
 
 ```
 git clone git@github.com:milon/url-shortener.git url
 cd url
 composer install
-npm install
-npm run dev
 cp .env.example .env
 php artisan key:generate
 ```
 
-Then you need to put your database credentials in the .env file. I used MySQL in this project, but any [Eloquent](https://laravel.com/docs/6.x/eloquent) supported relational database can be used. After that run these-
+Then you need to put your database credentials in the .env file. I used MySQL in this project, but any [Eloquent](https://laravel.com/docs/13.x/eloquent) supported relational database can be used. After that run these-
 
 ```
 php artisan migrate
@@ -36,17 +34,17 @@ Then you can visit the url shortener in this url- `http://127.0.0.1:8000`.
 
 ## Uses
 
-This application can be used both in logged in or logged out state. But for using the full potential, you should logged in.
+You need to log in to shorten URLs and see statistics. Shortened links (`/{hash}`) are public, except private links, which only the allowed emails can open after logging in.
 
 This project has following features-
 
-- Full fledged registration and login system
+- Login and password reset (registration is disabled)
 - Proper validation for each form
 - Option for private url
 - Basic statistics
-- Basic Admin Panel
+- Filament admin panel (all links and users for admins)
 
-**[screenshots](screenshots.md)**
+**[screenshots](screenshots.md)** (taken from the old Bootstrap UI)
 
 ## Demo
 
@@ -75,7 +73,7 @@ php artisan url:resolve --help
 
 ## API
 
-This project comes with 2 basic API endpoints to create and retrieve shorten links. Standard token based authentication is used here. Token can be generated and obtained from settings menu. A [postman collection](UrlShortener.postman_collection.json) can be downloaded for the demonstration.
+This project comes with 2 basic API endpoints to create and retrieve shorten links. Standard token based authentication is used here. Token can be generated and obtained from the profile page. A [postman collection](UrlShortener.postman_collection.json) can be downloaded for the demonstration.
 
 #### `GET /api/links/{hash}`
 
@@ -134,15 +132,15 @@ curl -X POST -d '{"url":"https://laravel.com/docs/6.x/validation","is_private":0
 
 **Unit Test**
 
-Make sure you have your database config setup on `.env.testing` file. I used `sqlite3` database for testing. Create a `database.sqlite` file in the `database` directly and then run the following command to run test-
+Tests run against an in-memory `sqlite` database (see `phpunit.xml`). Run the following command to run test-
 
 ```
-./vendor/bin/phpunit
+php artisan test
 ```
 
 **Browser Test**
 
-I used [Laravel Dusk](https://laravel.com/docs/6.x/dusk) for browser test. To install it's dependencies run the following command-
+I used [Laravel Dusk](https://laravel.com/docs/13.x/dusk) for browser test. To install it's dependencies run the following command-
 
 ```
 php artisan dusk:install

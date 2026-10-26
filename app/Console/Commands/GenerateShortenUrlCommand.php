@@ -52,10 +52,10 @@ class GenerateShortenUrlCommand extends Command
             'url' => $url,
             'hash' => $hash,
         ],
-        [
-            'url' => 'required|url',
-            'hash' => 'nullable|unique:links,hash',
-        ]);
+            [
+                'url' => 'required|url',
+                'hash' => 'nullable|unique:links,hash',
+            ]);
 
         if ($validator->fails()) {
             $this->info('Links can\'t be shortened. See error messages below:');

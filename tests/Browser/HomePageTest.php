@@ -2,47 +2,56 @@
 
 namespace Tests\Browser;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\Models\User;
+use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Laravel\Dusk\Browser;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\DuskTestCase;
 
 class HomePageTest extends DuskTestCase
 {
-    use RefreshDatabase;
+    use DatabaseMigrations;
 
-    /** @test */
-    public function it_loads_the_homepage()
+    #[Test]
+    public function it_loads_the_login_page()
     {
         $this->browse(function (Browser $browser) {
             $browser->visit('/')
+                ->assertPathIs('/login')
                 ->assertSee('URL Shortener');
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_can_shorten_an_url()
     {
-        $url = 'http://test-domain-name.tld';
-        $this->browse(function (Browser $browser) use ($url) {
-            $browser->visit('/')
-                ->type('url', $url)
-                ->press('Shorten URL')
-                ->assertPathIs('/')
-                ->assertSee('Here you go-');
+        $user = User::factory()->create();
+
+        $this->browse(function (Browser $browser) use ($user) {
+            $browser->loginAs($user)
+                ->visit('/links/create')
+                ->type('[id="form.url"]', 'http://test-domain-name.tld')
+                ->press('Create')
+                ->waitForText('Here you go!')
+                ->assertPathBeginsWith('/links/');
         });
     }
 
-    /** @test */
+    #[Test]
     public function it_redirect_a_shorten_url_to_original_url()
     {
         $url = 'https://milon.im/';
-        $this->browse(function (Browser $browser) use ($url) {
-            $browser->visit('/')
-                    ->type('url', $url)
-                    ->press('Shorten URL')
-                    ->assertVisible('#hash-link')
-                    ->visit($browser->attribute('#hash-link', 'href'))
-                    ->assertUrlIs($url);
+        $user = User::factory()->create();
+
+        $this->browse(function (Browser $browser) use ($url, $user) {
+            $browser->loginAs($user)
+                ->visit('/links/create')
+                ->type('[id="form.url"]', $url)
+                ->type('[id="form.hash"]', 'milon')
+                ->press('Create')
+                ->waitForText('Here you go!')
+                ->visit('/milon')
+                ->assertUrlIs($url);
         });
     }
 }

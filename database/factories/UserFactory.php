@@ -6,12 +6,15 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
+/**
+ * @extends Factory<User>
+ */
 class UserFactory extends Factory
 {
     /**
      * The name of the factory's corresponding model.
      *
-     * @var string
+     * @var class-string<User>
      */
     protected $model = User::class;
 
@@ -23,8 +26,8 @@ class UserFactory extends Factory
     public function definition()
     {
         return [
-            'name' => $this->faker->name,
-            'email' => $this->faker->unique()->safeEmail,
+            'name' => fake()->name(),
+            'email' => fake()->unique()->safeEmail(),
             'password' => bcrypt('password'),
             'api_token' => Str::random(30),
             'remember_token' => Str::random(10),

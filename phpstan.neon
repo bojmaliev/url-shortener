@@ -1,5 +1,5 @@
 includes:
-    - ./vendor/nunomaduro/larastan/extension.neon
+    - ./vendor/larastan/larastan/extension.neon
 
 parameters:
 
@@ -8,14 +8,8 @@ parameters:
         - database
         - tests
 
-
-    # The level 8 is the highest level
+    # The level 10 is the highest level
     level: 5
 
     ignoreErrors:
         - '#Access to an undefined property#'
-
-    excludePaths:
-        - '#excluded files list'
-
-    checkMissingIterableValueType: false

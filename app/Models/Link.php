@@ -31,11 +31,6 @@ class Link extends Model
         return $this->hasMany(Visitor::class);
     }
 
-    public function getIsPrivateLabelAttribute()
-    {
-        return $this->is_private ? 'Yes' : 'No';
-    }
-
     public function getAllowedEmailLabelAttribute()
     {
         if (! $this->allowed_email) {

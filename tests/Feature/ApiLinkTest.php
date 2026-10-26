@@ -6,6 +6,7 @@ use App\Contracts\UrlShortenerContract;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class ApiLinkTest extends TestCase
@@ -20,7 +21,7 @@ class ApiLinkTest extends TestCase
         $this->urlShortener = app(UrlShortenerContract::class);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_unauthorized_response_without_api_key()
     {
         $url = 'https://milon.im/';
@@ -39,7 +40,7 @@ class ApiLinkTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_a_link_for_a_hashed_url()
     {
         $url = 'https://milon.im/';
@@ -63,7 +64,7 @@ class ApiLinkTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_create_a_hashed_link_through_api()
     {
         $url = 'https://milon.im/';
@@ -86,5 +87,27 @@ class ApiLinkTest extends TestCase
                      'url' => $url,
                  ],
              ]);
+    }
+
+    #[Test]
+    public function it_accepts_numeric_is_private_flags()
+    {
+        $user = User::factory()->create();
+
+        $this->withToken($user->api_token)
+            ->postJson('/api/links', [
+                'url' => 'https://milon.im/',
+                'is_private' => 0,
+            ])
+            ->assertStatus(201)
+            ->assertJson(['link' => ['is_private' => false]]);
+
+        $this->withToken($user->api_token)
+            ->postJson('/api/links', [
+                'url' => 'https://laravel.com/',
+                'is_private' => 1,
+            ])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors('allowed_email');
     }
 }
