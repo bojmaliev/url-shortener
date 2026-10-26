@@ -3,11 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Contracts\UrlShortenerContract;
-use App\Models\Link;
-use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
+use Filament\Facades\Filament;
+use Filament\Notifications\Notification;
 use Jenssegers\Agent\Agent;
-use Spatie\ValidationRules\Rules\Delimited;
 
 class LinksController extends Controller
 {
@@ -18,56 +16,24 @@ class LinksController extends Controller
         $this->urlShortener = $urlShortener;
     }
 
-    public function create()
-    {
-        return view('create');
-    }
-
-    public function store(Request $request)
-    {
-        $request->validate([
-            'url' => 'required|url',
-            'hash' => 'nullable|unique:links,hash',
-            'allowed_email' => [
-                new Delimited('email'),
-                Rule::requiredIf($request->has('is_private')),
-            ],
-        ]);
-
-        $link = $this->urlShortener->make($request->url, $request->hash);
-
-        if ($request->has('is_private')) {
-            $link->is_private = true;
-            $link->allowed_email = $request->allowed_email;
-        } else {
-            $link->is_private = false;
-            $link->allowed_email = null;
-        }
-        $link->save();
-
-        return redirect('/')->with([
-            'url' => url($link->hash),
-        ]);
-    }
-
-    public function show(Link $link)
-    {
-        $visitors = $link->visitors()->paginate(10);
-
-        return view('show', compact('link', 'visitors'));
-    }
-
     public function process($hash)
     {
         $link = $this->urlShortener->byHash($hash);
 
         if (! $link) {
-            return redirect('/')->with(['error' => 'This URL is non existent']);
+            Notification::make()->danger()->title('This URL is non existent')->send();
+
+            return redirect(Filament::getUrl());
         }
 
         if ($link->is_private) {
             if (! $link->isAllowedByPrivateUser(auth()->user())) {
-                return redirect('/')->with(['error' => 'This URL is private. Log in with proper email to access.']);
+                Notification::make()->danger()->title('This URL is private. Log in with proper email to access.')->send();
+
+                // Guests come back to this link after logging in.
+                return auth()->guest()
+                    ? redirect()->guest(Filament::getLoginUrl())
+                    : redirect(Filament::getUrl());
             }
         }
 

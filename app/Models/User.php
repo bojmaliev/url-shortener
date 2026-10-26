@@ -2,20 +2,25 @@
 
 namespace App\Models;
 
+use Database\Factories\UserFactory;
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
 
-class User extends Authenticatable
+class User extends Authenticatable implements FilamentUser
 {
     use Notifiable;
+
+    /** @use HasFactory<UserFactory> */
     use HasFactory;
 
     /**
      * The attributes that are mass assignable.
      *
-     * @var array
+     * @var list<string>
      */
     protected $fillable = [
         'name', 'email', 'password',
@@ -24,16 +29,25 @@ class User extends Authenticatable
     /**
      * The attributes that should be hidden for arrays.
      *
-     * @var array
+     * @var list<string>
      */
     protected $hidden = [
         'password', 'remember_token',
     ];
 
     /**
+     * The model's default values for attributes.
+     *
+     * @var array<string, mixed>
+     */
+    protected $attributes = [
+        'is_admin' => false,
+    ];
+
+    /**
      * The attributes that should be cast to native types.
      *
-     * @var array
+     * @var array<string, string>
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
@@ -54,8 +68,8 @@ class User extends Authenticatable
         return $this->hasMany(Link::class);
     }
 
-    public function getIsAdminLabelAttribute()
+    public function canAccessPanel(Panel $panel): bool
     {
-        return $this->is_admin ? 'Yes' : 'No';
+        return true;
     }
 }

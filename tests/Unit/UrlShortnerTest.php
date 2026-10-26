@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class UrlShortnerTest extends TestCase
@@ -25,10 +26,10 @@ class UrlShortnerTest extends TestCase
         $this->urlShortener = app(UrlShortenerContract::class);
     }
 
-    /** @test */
+    #[Test]
     public function it_create_a_shorten_url()
     {
-        $url = $this->faker->url;
+        $url = $this->faker->url();
 
         $link = $this->urlShortener->make($url);
 
@@ -36,10 +37,10 @@ class UrlShortnerTest extends TestCase
         $this->assertEquals($url, $link->url);
     }
 
-    /** @test */
+    #[Test]
     public function it_create_the_same_link_for_same_hash()
     {
-        $url = $this->faker->url;
+        $url = $this->faker->url();
 
         $link1 = $this->urlShortener->make($url);
         $link2 = $this->urlShortener->make($url);
@@ -47,10 +48,10 @@ class UrlShortnerTest extends TestCase
         $this->assertEquals($link1->hash, $link2->hash);
     }
 
-    /** @test */
+    #[Test]
     public function it_return_different_hash_for_same_url_for_different_user()
     {
-        $url = $this->faker->url;
+        $url = $this->faker->url();
 
         $link1 = $this->urlShortener->make($url);
 
@@ -64,10 +65,10 @@ class UrlShortnerTest extends TestCase
         $this->assertNotEquals($link1->hash, $link2->hash);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_unshorten_a_hashed_url()
     {
-        $url = $this->faker->url;
+        $url = $this->faker->url();
 
         $hashedLink = $this->urlShortener->make($url);
 

@@ -61,7 +61,7 @@ class LinksController extends Controller
             'is_private' => 'required|boolean',
             'allowed_email' => [
                 new Delimited('email'),
-                Rule::requiredIf($request->is_private),
+                Rule::requiredIf($request->boolean('is_private')),
             ],
         ]);
 
