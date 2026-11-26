@@ -21,4 +21,9 @@ class LinkPolicy
     {
         return true;
     }
+
+    public function update(User $user, Link $link): bool
+    {
+        return $this->view($user, $link);
+    }
 }

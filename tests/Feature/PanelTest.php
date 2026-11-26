@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Contracts\UrlShortenerContract;
 use App\Filament\Pages\Auth\EditProfile;
 use App\Filament\Resources\Links\Pages\CreateLink;
+use App\Filament\Resources\Links\Pages\EditLink;
 use App\Filament\Resources\Links\Pages\ListLinks;
 use App\Filament\Resources\Links\Pages\ViewLink;
 use App\Models\Link;
@@ -113,6 +114,56 @@ class PanelTest extends TestCase
             ])
             ->call('create')
             ->assertHasFormErrors(['allowed_email']);
+    }
+
+    #[Test]
+    public function it_can_edit_a_link()
+    {
+        $link = $this->linkFor(User::factory()->create(), 'https://laravel.com/');
+        $this->linkFor(User::factory()->create(), 'https://example.com/')->update(['hash' => 'taken']);
+        $this->actingAs($link->user);
+
+        Livewire::test(EditLink::class, ['record' => $link->getRouteKey()])
+            ->assertSchemaStateSet(['url' => 'https://laravel.com/', 'hash' => $link->hash])
+            ->fillForm(['hash' => 'taken'])
+            ->call('save')
+            ->assertHasFormErrors(['hash' => 'unique'])
+            ->fillForm(['hash' => ''])
+            ->call('save')
+            ->assertHasFormErrors(['hash' => 'required'])
+            ->fillForm([
+                'url' => 'https://milon.im/',
+                'hash' => 'milon',
+                'is_private' => true,
+                'allowed_email' => 'contact@milon.im',
+            ])
+            ->call('save')
+            ->assertHasNoFormErrors();
+
+        $this->assertDatabaseHas('links', [
+            'id' => $link->id,
+            'url' => 'https://milon.im/',
+            'hash' => 'milon',
+            'is_private' => true,
+            'allowed_email' => 'contact@milon.im',
+        ]);
+
+        // Keeping the same hash passes the unique rule; making it public clears the emails.
+        Livewire::test(EditLink::class, ['record' => $link->getRouteKey()])
+            ->fillForm(['is_private' => false])
+            ->call('save')
+            ->assertHasNoFormErrors();
+
+        $this->assertDatabaseHas('links', ['id' => $link->id, 'hash' => 'milon', 'is_private' => false, 'allowed_email' => null]);
+    }
+
+    #[Test]
+    public function users_cannot_edit_others_links()
+    {
+        $other = $this->linkFor(User::factory()->create(), 'https://laravel.com/');
+        $this->actingAs(User::factory()->create());
+
+        $this->get('/links/'.$other->id.'/edit')->assertNotFound();
     }
 
     #[Test]

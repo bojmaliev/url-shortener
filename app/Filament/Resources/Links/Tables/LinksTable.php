@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Links\Tables;
 
 use App\Models\Link;
+use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -55,6 +56,7 @@ class LinksTable
             ])
             ->recordActions([
                 ViewAction::make(),
+                EditAction::make(),
             ])
             ->emptyStateHeading('No links yet!');
     }

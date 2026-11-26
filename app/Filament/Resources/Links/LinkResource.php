@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Links;
 
 use App\Filament\Resources\Links\Pages\CreateLink;
+use App\Filament\Resources\Links\Pages\EditLink;
 use App\Filament\Resources\Links\Pages\ListLinks;
 use App\Filament\Resources\Links\Pages\ViewLink;
 use App\Filament\Resources\Links\RelationManagers\VisitorsRelationManager;
@@ -63,6 +64,7 @@ class LinkResource extends Resource
             'index' => ListLinks::route('/'),
             'create' => CreateLink::route('/create'),
             'view' => ViewLink::route('/{record}'),
+            'edit' => EditLink::route('/{record}/edit'),
         ];
     }
 }

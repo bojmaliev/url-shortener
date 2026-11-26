@@ -24,6 +24,8 @@ class LinkForm
                 TextInput::make('hash')
                     ->label('Custom Hash')
                     ->placeholder('Put your custom hash name (Optional)')
+                    // A link must keep a hash once it exists; it is only generated on create.
+                    ->required(fn (string $operation): bool => $operation === 'edit')
                     ->unique(),
                 Toggle::make('is_private')
                     ->label('Is Private')
